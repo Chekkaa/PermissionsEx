@@ -497,7 +497,30 @@ public class PermissionUser extends PermissionEntity {
 			this.cachedPrefix.put(worldName, super.getPrefix(worldName));
 		}
 
-		return this.cachedPrefix.get(worldName);
+        //Begin very poorly designed hack by Chekkaa of NeonShift.com.
+
+        String buildPrefix = "", staffPrefix = "", donorPrefix = "";
+        int buildRank = 1000, staffRank = 1000, donorRank = 1000;
+
+        for (PermissionGroup group : this.getGroups(worldName)) {
+            String testPrefix = group.getPrefix(worldName);
+            if(testPrefix != null && !testPrefix.isEmpty()){
+                if(group.getRankLadder().equals("build") && group.getRank() <= buildRank){
+                    buildPrefix = testPrefix;
+                    buildRank = group.getRank();
+                }else if(group.getRankLadder().equals("staff") && group.getRank() <= staffRank){
+                    staffPrefix = testPrefix;
+                    staffRank = group.getRank();
+                }else if(group.getRankLadder().equals("donor") && group.getRank() <= donorRank){
+                    donorPrefix = testPrefix;
+                    donorRank = group.getRank();
+                }
+            }
+        }
+
+		return this.cachedPrefix.get(worldName) + donorPrefix + buildPrefix + staffPrefix + " ";
+
+        //End very poorly designed hack.
 	}
 
 	@Override
